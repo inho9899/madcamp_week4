@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medium Style Web Page with File Explorer Tabs</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            width: 80%;
+            height: 80vh;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            margin-top: 50px;
+        }
+        .header {
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: normal;
+            text-align: center;
+        }
+        .main {
+            display: flex;
+            flex: 1;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .nav-tabs {
+            border-bottom: none;
+        }
+        .nav-tabs .nav-item {
+            margin-bottom: -1px;
+        }
+        .nav-tabs .nav-link {
+            border: 1px solid transparent;
+            border-bottom: none;
+            background-color: #f4f4f4;
+            margin-right: 5px;
+            border-radius: 0;
+            position: relative;
+            padding-left: 30px;
+        }
+        .nav-tabs .nav-link::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            border-right: 15px solid #fff;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: white;
+            border-color: #ddd #ddd white;
+        }
+        .nav-tabs .nav-link.active::before {
+            border-right-color: white;
+        }
+        .tab-content {
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Medium Style Web Page</h1>
+        </div>
+        <div class="main">
+            <div class="content">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="tab1-tab" data-toggle="tab" href="#tab1" role="tab" aria-controls="tab1" aria-selected="true">Tab 1</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="tab2-tab" data-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">Tab 2</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="tab3-tab" data-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Tab 3</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                        <h2>Welcome to Tab 1</h2>
+                        <p>This is the content of the first tab. You can add more information here as needed.</p>
+                    </div>
+                    <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+                        <h2>Welcome to Tab 2</h2>
+                        <p>This is the content of the second tab. You can add more information here as needed.</p>
+                    </div>
+                    <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+                        <h2>Welcome to Tab 3</h2>
+                        <p>This is the content of the third tab. You can add more information here as needed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
