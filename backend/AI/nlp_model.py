@@ -3,10 +3,12 @@ from transformers import pipeline
 from transformers import BartTokenizer, BartForConditionalGeneration
 from transformers import TokenClassificationPipeline, AutoModelForTokenClassification, AutoTokenizer
 from transformers import T5Tokenizer, T5ForConditionalGeneration
+from transformers import PreTrainedTokenizerFast
+from transformers import BartForConditionalGeneration
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# 감성 분석
+# 감성 분석 example
 def nlp_model_predict(input_text):
     classifier = pipeline("sentiment-analysis", model="michellejieli/emotion_text_classifier", device=0 if torch.cuda.is_available() else -1, top_k=None)
     result = classifier(input_text)
@@ -16,14 +18,22 @@ def nlp_model_predict(input_text):
 
     return result
 
-# 텍스트 요약 
-tokenizer_bart = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
-model_bart = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn').to(device)
+
+# 텍스트 요약 - KoBART
+tokenizer = PreTrainedTokenizerFast.from_pretrained('digit82/kobart-summarization')
+model = BartForConditionalGeneration.from_pretrained('digit82/kobart-summarization').to(device)
 
 def summarize(input_text):
-    inputs = tokenizer_bart([input_text], max_length=1024, return_tensors='pt', truncation=True).to(device)
-    summary_ids = model_bart.generate(inputs['input_ids'], num_beams=4, max_length=150, early_stopping=True)
-    return tokenizer_bart.decode(summary_ids[0], skip_special_tokens=True)
+    # 입력 텍스트 토큰화 및 입력 ID 생성
+    text = input_text.replace('\n', ' ')
+    raw_input_ids = tokenizer.encode(text)
+    input_ids = [tokenizer.bos_token_id] + raw_input_ids + [tokenizer.eos_token_id]
+    
+    # 입력 ID를 텐서로 변환하고 GPU로 이동
+    summary_ids = model.generate(torch.tensor([input_ids]).to(device),  num_beams=4,  max_length=512,  eos_token_id=1)
+    output = tokenizer.decode(summary_ids.squeeze().tolist(), skip_special_tokens=True)
+    return output
+
 
 # 키워드 추출
 class KeyphraseExtractionPipeline(TokenClassificationPipeline):
@@ -54,11 +64,11 @@ def generate_keywords(input_text):
     return tokenizer_t5.decode(output[0], skip_special_tokens=True)
 
 
-def KoBERT(input):
-    # kobert sentiment-analysis
-    pipe = pipeline("feature-extraction", model="HyeonSang/kobert-sentiment", from_tf=True)
-    result = pipe(input)
-    return result
+# def KoBERT(input):
+#     # kobert sentiment-analysis
+#     pipe = pipeline("feature-extraction", model="HyeonSang/kobert-sentiment", from_tf=True)
+#     result = pipe(input)
+#     return result
 
 
 
@@ -82,4 +92,4 @@ korean_txt = "아 힘들다"
 
 # print(summarize(txt))
 
-print(KoBERT(korean_txt))
+# print(KoBERT(korean_txt))
