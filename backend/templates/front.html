@@ -28,6 +28,7 @@
         <h3>Summary:</h3>
         <div id="summary"></div>
     </div>
+    <a href="/chat">Go to Chatbot</a>
     <script>
         document.getElementById('inputForm').addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -54,7 +55,8 @@
             // 혼합된 색상 표시
             const colorBox = document.getElementById('mixed_color');
             const [r, g, b] = data.mixed_color;
-            colorBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+            const alpha = 0.5;
+            colorBox.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
 
             // 요약 문장 표시
             const summaryTextDiv = document.getElementById('summary');
