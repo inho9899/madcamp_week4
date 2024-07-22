@@ -6,11 +6,9 @@ from AI.colorize import predict_emotion
 from AI.nlp_model import summarize
 from dotenv import load_dotenv
 import os
-import openai
 from openai import OpenAI
+import openai
 import time
-
-
 
 
 # 환경 변수 로드
@@ -36,42 +34,15 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 custom_gpt_id = os.getenv('CUSTOM_GPT_ID')
 
 
-#API
-@app.route('/')
-def index():
-    return render_template('front.html')
 
-@app.route('/chat')
-def chat_page():
-    return render_template('chat.html')
-
-
-@app.route('/predict', methods=['POST'])
-def predict():
-    data = request.get_json()
-    input_text = data['input_text']
-
+# 감정 분석 & 문장 요약
+def emotion_analysis(input_text):
     emotion_percentages, mixed_color = predict_emotion(input_text)
     summary = summarize(input_text)
-    print(emotion_percentages)
-    print(mixed_color)
-    print(summary)
-    # output_text = summarize(input_text)
-    # output_text = keyword(input_text)
-    # output_text = generate_keywords(input_text)
+    
+    return emotion_percentages, mixed_color, summary
 
-
-    # new_prediction = Prediction(input_text=input_text, output_text=output_text)
-    # db.session.add(new_prediction)
-    # db.session.commit()
-    return jsonify({'input_text': input_text, 'emotion_percentages': emotion_percentages, 'mixed_color': mixed_color, 'summary': summary})
-
-
-# 커스텀 챗봇 수행
-assistant = client.beta.assistants.retrieve(custom_gpt_id)
-print(assistant)
-thread = client.beta.threads.create()
-
+# 대화 기다리기
 def wait_on_run(run, thread):
     while run.status == "queued" or run.status == "in_progress":
         run = client.beta.threads.runs.retrieve(
@@ -81,6 +52,48 @@ def wait_on_run(run, thread):
         time.sleep(0.5)
     return run
 
+
+
+#API
+@app.route('/')
+def index():
+    return render_template('front.html')
+
+@app.route('/chat')
+def chat_page():
+    return render_template('chat.html')
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = request.get_json()
+    input_text = data['input_text']
+
+    emotion_percentages, mixed_color, summary = emotion_analysis(input_text)
+
+    # db 저장
+    # new_prediction = Prediction(input_text=input_text, output_text=output_text)
+    # db.session.add(new_prediction)
+    # db.session.commit()
+    return jsonify({'input_text': input_text, 'emotion_percentages': emotion_percentages, 'mixed_color': mixed_color, 'summary': summary})
+
+
+# 커스텀 챗봇 수행
+assistant = client.beta.assistants.retrieve(custom_gpt_id) 
+thread = None
+
+# 대화 시작
+@app.route('/start_conversation', methods=['POST'])
+def start_conversation():
+    global thread
+    try:
+        # 새로운 스레드 생성
+        thread = client.beta.threads.create() # 대화를 시작할 때마다 새로운 대화 스레드 생성
+        return jsonify({'thread_id': thread.id})
+    except openai.error.OpenAIError as e:
+        return jsonify({'error': str(e)})
+
+
+# 대화 도중
 @app.route('/chat_response', methods=['POST'])
 def chat():
     user_message = request.json.get('message')
@@ -117,9 +130,28 @@ def chat():
         for content_block in message.content:
             if content_block.type == 'text':
                 value = content_block.text.value
-                bot_message = value
 
     return jsonify({'message': value})
+
+
+# 대화 종료 -> 사용자 대답 모아서 감정 분석
+@app.route('/end_conversation', methods=['POST'])
+def end_conversation():
+    thread_id = request.json.get('thread_id')
+    
+    messages = client.beta.threads.messages.list(
+        thread_id=thread_id, order="asc"
+    )
+    
+    user_messages = []
+    for message in messages.data:
+        if message.role == 'user':
+            user_messages.append(" ".join(content_block.text.value for content_block in message.content if content_block.type == 'text'))
+    
+    combined_text = " ".join(user_messages)
+    
+    emotion_percentages, mixed_color, summary = emotion_analysis(combined_text)
+    return jsonify({'input_text': combined_text, 'emotion_percentages': emotion_percentages, 'mixed_color': mixed_color, 'summary': summary})
 
 
 if __name__ == '__main__':
