@@ -36,7 +36,7 @@ class BERTClassifier(nn.Module):
             out = self.dropout(pooler)
         return self.classifier(out)
 
-# 모델 저장 경로 설정
+# 모델 저장 경로 설정 -> 백엔드에 파일에서 접근할 때를 기준으로 설정해줘야 함
 model_save_path = 'AI/saved_model'
 
 # 토크나이저 불러오기
@@ -81,7 +81,7 @@ def mix_colors(probabilities, emotion_colors, pastel_factor=0.5):
     return int(r), int(g), int(b)
 
 # 모델과 토크나이저 사용 예제
-def predict_emotion(predict_sentence, model, tokenizer, max_len=64, device='cuda'):
+def predict_emotion(predict_sentence, max_len=64, device='cuda'):
 
     # 입력 문장을 토큰화하고 텐서로 변환
     inputs = tokenizer(
