@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Flask NLP Model</title>
+    <style>
+        #mixed_color {
+            width: 100px;
+            height: 100px;
+            margin-top: 10px;
+            border: 1px solid #000;
+        }
+        .emotion-percentage {
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
     <h1>Flask NLP Model</h1>
@@ -11,7 +22,10 @@
         <input type="submit" value="Submit">
     </form>
     <h2>Output:</h2>
-    <p id="outputText"></p>
+    <div id="outputText">
+        <div id="emotion_percentages"></div>
+        <div id="mixed_color"></div>
+    </div>
     <script>
         document.getElementById('inputForm').addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -24,7 +38,21 @@
                 body: JSON.stringify({input_text: inputText}),
             });
             const data = await response.json();
-            document.getElementById('outputText').innerText = data.output_text;
+
+            // 감정 퍼센트 표시
+            const emotionPercentagesDiv = document.getElementById('emotion_percentages');
+            emotionPercentagesDiv.innerHTML = '';
+            for (const [emotion, percentage] of Object.entries(data.emotion_percentages)) {
+                const p = document.createElement('p');
+                p.className = 'emotion-percentage';
+                p.innerText = `${emotion}: ${(percentage * 100).toFixed(2)}%`;
+                emotionPercentagesDiv.appendChild(p);
+            }
+
+            // 혼합된 색상 표시
+            const colorBox = document.getElementById('mixed_color');
+            const [r, g, b] = data.mixed_color;
+            colorBox.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
         });
     </script>
 </body>
