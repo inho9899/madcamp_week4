@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from AI.colorize import predict_emotion
 from AI.nlp_model import summarize
+from AI.keyword import keywords
 from dotenv import load_dotenv
 import os
 from openai import OpenAI
@@ -41,7 +42,7 @@ class Diary(db.Model):
     content = db.Column(db.Text, nullable=False)
     emotion = db.Column(db.JSON, nullable=False)
     color = db.Column(db.JSON, nullable=False)
-    summary = db.Column(db.Text, nullable=False)
+    summary = db.Column(db.JSON, nullable=False)  # 키워드를 저장할 필드
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -55,7 +56,7 @@ custom_gpt_id = os.getenv('CUSTOM_GPT_ID')
 # 감정 분석 & 문장 요약
 def emotion_analysis(input_text):
     emotion_percentages, mixed_color = predict_emotion(input_text)
-    summary = summarize(input_text)
+    summary = keywords(input_text)
     
     return emotion_percentages, mixed_color, summary
 
@@ -75,9 +76,11 @@ def wait_on_run(run, thread_id):
 def index():
     return render_template('front.html')
 
+
 @app.route('/chat')
 def chat_page():
     return render_template('chat.html')
+
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -94,6 +97,7 @@ def register():
     db.session.commit()
 
     return jsonify({'status': 'success', 'message': 'User registered successfully'})
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -133,20 +137,55 @@ def create():
     )
     db.session.add(new_diary)
     db.session.commit()
-    return jsonify({'emotion_percentages': emotion_percentages, 'mixed_color': mixed_color, 'summary': summary})
+    return jsonify({'id': new_diary.id, 'emotion_percentages': emotion_percentages, 'mixed_color': mixed_color, 'summary': summary})
 
+
+@app.route('/edit', methods=['PATCH'])
+def edit():
+    data = request.get_json()
+    content = data['content']
+    diary_id = data['diary_id']
+
+    # 일기 항목을 diary_id로 조회
+    diary = Diary.query.get(diary_id)
+    
+    if not diary:
+        return jsonify({'error': 'Diary not found'})
+
+    # 감정 분석 (필요 시만 수행)
+    if content:
+        emotion_percentages, mixed_color, summary = emotion_analysis(content)
+        diary.content = content
+        diary.emotion = emotion_percentages
+        diary.color = mixed_color
+        diary.summary = summary
+
+    # 데이터베이스 업데이트
+    db.session.commit()
+
+    return jsonify({
+        'id': diary.id,
+        'emotion_percentages': diary.emotion,
+        'mixed_color': diary.color,
+        'summary': diary.summary
+    })
 
 # 일기 정보 불러오기
 @app.route('/read', methods=['GET'])
 def read():
     user_id = request.args.get('user_id')
     if not user_id:
-        return jsonify({'status': 'failed', 'message': 'User ID is required'})
+        return jsonify({'status': 'failed', 'message': 'User ID is required'}), 400
+    
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        return jsonify({'status': 'failed', 'message': 'User ID must be an integer'}), 400
     
     try:
         diaries = Diary.query.filter_by(user_id=user_id).all()
         if not diaries:
-            return jsonify({'status': 'failed', 'message': 'No diaries found for this user'})
+            return jsonify({'status': 'failed', 'message': 'No diaries found for this user'}), 404
 
         diary_list = []
         for diary in diaries:
@@ -157,13 +196,13 @@ def read():
                 'emotion': diary.emotion,
                 'color': diary.color,
                 'summary': diary.summary,
-                'created_at': diary.created_at
+                'created_at': diary.created_at.isoformat()  # ISO 8601 형식으로 변환
             }
             diary_list.append(diary_data)
         
-        return jsonify({'status': 'success', 'diaries': diary_list})
+        return jsonify({'status': 'success', 'diaries': diary_list}), 200
     except Exception as e:
-        return jsonify({'status': 'failed', 'message': str(e)})
+        return jsonify({'status': 'failed', 'message': str(e)}), 500
     
 
 # 커스텀 챗봇 수행
