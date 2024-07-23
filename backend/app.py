@@ -10,7 +10,7 @@ from openai import OpenAI
 import openai
 import time
 from werkzeug.security import check_password_hash, generate_password_hash
-from datetime import datetime
+from datetime import datetime, date
 from flask_cors import CORS
 
 
@@ -43,7 +43,7 @@ class Diary(db.Model):
     emotion = db.Column(db.JSON, nullable=False)
     color = db.Column(db.JSON, nullable=False)
     summary = db.Column(db.JSON, nullable=False)  # 키워드를 저장할 필드
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.Date, default=date.today)
 
 
 # OpenAI API 키 설정
@@ -171,19 +171,16 @@ def edit():
     })
 
 # 일기 정보 불러오기
-@app.route('/read', methods=['GET'])
+@app.route('/read', methods=['POST'])
 def read():
-    user_id = request.args.get('user_id')
+    data = request.get_json()
+    user_id = data["user_id"]
+    
     if not user_id:
         return jsonify({'status': 'failed', 'message': 'User ID is required'}), 400
-    
-    try:
-        user_id = int(user_id)
-    except ValueError:
-        return jsonify({'status': 'failed', 'message': 'User ID must be an integer'}), 400
-    
     try:
         diaries = Diary.query.filter_by(user_id=user_id).all()
+        print(diaries)
         if not diaries:
             return jsonify({'status': 'failed', 'message': 'No diaries found for this user'}), 404
 
@@ -196,7 +193,7 @@ def read():
                 'emotion': diary.emotion,
                 'color': diary.color,
                 'summary': diary.summary,
-                'created_at': diary.created_at.isoformat()  # ISO 8601 형식으로 변환
+                'created_at': diary.created_at.isoformat()
             }
             diary_list.append(diary_data)
         
