@@ -49,7 +49,7 @@ bertmodel = get_kobert_model()
 model = BERTClassifier(bertmodel, dr_rate=0.5).to('cuda')
 
 # 저장된 모델 가중치 로드
-model.load_state_dict(torch.load(os.path.join(model_save_path, 'pytorch_model.bin')))
+model.load_state_dict(torch.load(os.path.join(model_save_path, 'pytorch_model.bin')), strict=False)
 
 # 감정별 색상 정의 (RGB)
 emotion_colors = {
