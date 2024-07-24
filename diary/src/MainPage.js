@@ -74,7 +74,7 @@ const Calendar = ({ colors = [], onPrevMonth, onNextMonth }) => {
                 }
             }
 
-            const color = colors[day - 1] ? `rgb(${colors[day - 1].join(',')})` : '';
+            const color = colors[day - 1] ? `rgba(${colors[day - 1].join(',')}, 0.5)` : '';
 
             calendarDays.push({ day, className, color });
         }
