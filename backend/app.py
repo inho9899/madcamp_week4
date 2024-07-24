@@ -54,9 +54,12 @@ custom_gpt_id = os.getenv('CUSTOM_GPT_ID')
 
 
 # 감정 분석 & 문장 요약
-def emotion_analysis(input_text):
+def emotion_analysis(input_text, type):
     emotion_percentages, mixed_color = predict_emotion(input_text)
-    summary = keywords(input_text)
+    if type == "text":
+        summary = keywords(input_text)
+    elif type == "chat":
+        summary = summarize(input_text)
     
     return emotion_percentages, mixed_color, summary
 
@@ -123,7 +126,6 @@ def create():
     data = request.get_json()
     content = data['content']
     user_id = data['user_id']
-    type = data['type']
     created_at = data['created_at']
     
     if created_at:
@@ -131,11 +133,11 @@ def create():
     else:
         created_at = date.today()
 
-    emotion_percentages, mixed_color, summary = emotion_analysis(content)
+    emotion_percentages, mixed_color, summary = emotion_analysis(content, "text")
 
     new_diary = Diary(
         user_id=user_id,
-        type=type,
+        type="text",
         content=content,
         emotion=emotion_percentages,
         color=mixed_color,
@@ -161,7 +163,7 @@ def edit():
 
     # 감정 분석 (필요 시만 수행)
     if content:
-        emotion_percentages, mixed_color, summary = emotion_analysis(content)
+        emotion_percentages, mixed_color, summary = emotion_analysis(content, "text") # 수정은 줄글만 가능
         diary.content = content
         diary.emotion = emotion_percentages
         diary.color = mixed_color
@@ -178,11 +180,8 @@ def edit():
     })
 
 # 일기 정보 불러오기
-@app.route('/read', methods=['POST'])
-def read():
-    data = request.get_json()
-    user_id = data["user_id"]
-    
+@app.route('/read/<int:user_id>', methods=['GET'])
+def read(user_id):    
     if not user_id:
         return jsonify({'status': 'failed', 'message': 'User ID is required'}), 400
     try:
@@ -208,6 +207,18 @@ def read():
     except Exception as e:
         return jsonify({'status': 'failed', 'message': str(e)}), 500
     
+    
+    
+@app.route('/delete/<int:diary_id>', methods=['DELETE'])
+def delete_diary(diary_id):
+    diary = Diary.query.get(diary_id)
+    if diary:
+        db.session.delete(diary)
+        db.session.commit()
+        return jsonify({'message': 'Diary entry deleted successfully'}), 200
+    else:
+        return jsonify({'message': 'Diary entry not found'}), 404
+
 
 # 커스텀 챗봇 수행
 assistant = client.beta.assistants.retrieve(custom_gpt_id) 
@@ -262,6 +273,13 @@ def chat():
 def end_conversation():
     data = request.get_json()
     thread_id = data['thread_id']
+    user_id = data['user_id']
+    created_at = data['created_at']
+    
+    if created_at:
+        created_at = datetime.strptime(created_at, '%Y-%m-%d').date()
+    else:
+        created_at = date.today()
     
     messages = client.beta.threads.messages.list(
         thread_id=thread_id, 
@@ -269,13 +287,30 @@ def end_conversation():
     )
     
     user_messages = []
+    all_messages = []
     for message in messages.data:
         if message.role == 'user':
             user_messages.append(" ".join(content_block.text.value for content_block in message.content if content_block.type == 'text'))
-    
+            all_messages.append(" ".join(content_block.text.value for content_block in message.content if content_block.type == 'text'))
+        else:
+            all_messages.append(" ".join(content_block.text.value for content_block in message.content if content_block.type == 'text'))
     combined_text = " ".join(user_messages)
+    content = "[CLS]".join(all_messages)
     
-    emotion_percentages, mixed_color, summary = emotion_analysis(combined_text)
+    emotion_percentages, mixed_color, summary = emotion_analysis(combined_text, "chat")
+    
+    new_diary = Diary(
+        user_id=user_id,
+        type="chat",
+        content=content,
+        emotion=emotion_percentages,
+        color=mixed_color,
+        summary=summary,
+        created_at=created_at
+    )
+    db.session.add(new_diary)
+    db.session.commit()
+    
     return jsonify({'input_text': combined_text, 'emotion_percentages': emotion_percentages, 'mixed_color': mixed_color, 'summary': summary})
 
 
