@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './MainPage.css';
 import headerImage from './logo.png'; // 이미지 파일 가져오기
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-function get_max_index(dict){
-    let emotion = { 공포: 0, 놀람: 1, 분노: 2, 슬픔: 3, 중립: 4, 행복: 5, 혐오: 6, 불안: 7};
+function get_max_index(dict) {
+    let emotion = { 공포: 0, 놀람: 1, 분노: 2, 슬픔: 3, 중립: 4, 행복: 5, 혐오: 6, 불안: 7 };
     let tmp = Object.keys(dict).reduce((a, b) => dict[a] > dict[b] ? a : b);
 
     return emotion[tmp];
@@ -14,7 +14,7 @@ const get_statics_color = async (Monthdays, uid, Month) => {
     const response = await fetch(`http://172.10.5.46:80/read/${uid}`, {
         method: 'GET'
     });
-    
+
     const data = await response.json();
     console.log(data);
 
@@ -28,10 +28,10 @@ const get_statics_color = async (Monthdays, uid, Month) => {
     let res = Array(9).fill(0); // 예시 배열
 
     const monthString = `${2024}-${String(Month + 1).padStart(2, '0')}`;
-    
+
     let cnt = 0;
-    for(let i = 0  ; i < resp.length ; i ++){
-        if (resp[i]['created_at'].startsWith(monthString)){
+    for (let i = 0; i < resp.length; i++) {
+        if (resp[i]['created_at'].startsWith(monthString)) {
             res[get_max_index(resp[i]["emotion"])] += 1;
             cnt += 1;
         }
@@ -150,7 +150,7 @@ const CircularProgressBar = ({ progress, statics }) => {
     let psy = new Array(len);
     let xi = new Array(len);
     let colors = ["rgba(0, 0, 0, 0.8)", "rgba(128, 0, 128, 0.8)", "rgba(255, 0, 0, 0.8)", "rgba(0, 0, 255, 0.8)",
-         "rgba(128, 128, 128, 0.8)", "rgba(255, 255, 0, 0.8)", "rgba(0, 255, 0, 0.8)", "rgba(255, 165, 0, 0.8)", "rgba(255, 255, 255, 0.8)"];
+        "rgba(128, 128, 128, 0.8)", "rgba(255, 255, 0, 0.8)", "rgba(0, 255, 0, 0.8)", "rgba(255, 165, 0, 0.8)", "rgba(255, 255, 255, 0.8)"];
 
     for (let i = 0; i < len; i++) {
         psy[i] = arc_circumference[i] / (Math.PI * 2 * normalizedRadius);
@@ -209,7 +209,7 @@ const getUserColors = async (numDays, uid, Month) => {
     const response = await fetch(`http://172.10.5.46:80/read/${uid}`, {
         method: 'GET'
     });
-    
+
     const data = await response.json();
 
     const res = data.diaries.map(entry => ({
@@ -221,7 +221,7 @@ const getUserColors = async (numDays, uid, Month) => {
 
     let colors = [];
 
-    for(let i = 0 ; i < numDays; i++){
+    for (let i = 0; i < numDays; i++) {
         colors.push([255, 255, 255]);
     }
 
@@ -242,6 +242,29 @@ const MainPage = () => {
 
     const location = useLocation();
     const userId = location.state?.userId;
+    const navigate = useNavigate();
+
+    const [showButtons, setShowButtons] = useState(false);
+
+    const handleShowClick = () => {
+        navigate('/show', { state: { userId } });
+    };
+
+    const handleAddClick = () => {
+        setShowButtons(true);
+    };
+
+    const handleCloseClick = () => {
+        setShowButtons(false);
+    };
+
+    const handleButton1Click = () => {
+        navigate('/write', { state: { userId } });
+    };
+
+    const handleButton2Click = () => {
+        navigate('/chat', { state: { userId } });
+    };
 
     const [progress, setProgress] = useState(0);
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -305,6 +328,10 @@ const MainPage = () => {
                     onClick={handleLogoClick} 
                     style={{ cursor: 'pointer' }} 
                 />
+                <div className="header-buttons">
+                    <button onClick={handleShowClick}>Show</button>
+                    <button onClick={handleAddClick}>Add</button>
+                </div>
             </div>
             <div className="ShowCal">
                 <div className="Calendar">
@@ -334,6 +361,16 @@ const MainPage = () => {
                     <CircularProgressBar progress={progress} statics={statics} />
                 </div>
             </div>
+            {showButtons && (
+                <div className="overlay-container">
+                    <h1>일기장 형식을 골라주세요</h1>
+                    <div className="overlay-buttons">
+                        <button className="big-button" onClick={handleButton1Click}>글로 쓰기</button>
+                        <button className="big-button" onClick={handleButton2Click}>ChatBot과 같이 쓰기</button>
+                    </div>
+                    <button className="close-button" onClick={handleCloseClick}>Close</button>
+                </div>
+            )}
         </div>
     );
 };
