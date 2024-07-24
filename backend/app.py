@@ -124,6 +124,12 @@ def create():
     content = data['content']
     user_id = data['user_id']
     type = data['type']
+    created_at = data['created_at']
+    
+    if created_at:
+        created_at = datetime.strptime(created_at, '%Y-%m-%d').date()
+    else:
+        created_at = date.today()
 
     emotion_percentages, mixed_color, summary = emotion_analysis(content)
 
@@ -133,11 +139,12 @@ def create():
         content=content,
         emotion=emotion_percentages,
         color=mixed_color,
-        summary=summary
+        summary=summary,
+        created_at=created_at
     )
     db.session.add(new_diary)
     db.session.commit()
-    return jsonify({'id': new_diary.id, 'emotion_percentages': emotion_percentages, 'mixed_color': mixed_color, 'summary': summary})
+    return jsonify({'id': new_diary.id, 'emotion_percentages': emotion_percentages, 'mixed_color': mixed_color, 'summary': summary, 'created_at': created_at})
 
 
 @app.route('/edit', methods=['PATCH'])
