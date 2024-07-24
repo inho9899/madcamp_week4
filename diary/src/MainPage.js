@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './MainPage.css';
 import headerImage from './logo.png'; // 이미지 파일 가져오기
+import { useLocation } from 'react-router-dom';
 
 const generateRandomColors = (numDays) => {
     let colors = [];
@@ -41,8 +42,7 @@ const get_statics_color = (colors) => {
     return res;
 };
 
-const Calendar = ({ colors = [], onPrevMonth, onNextMonth }) => {
-    const [currentDate, setCurrentDate] = useState(new Date(2024, 6));
+const Calendar = ({ colors = [], onPrevMonth, onNextMonth, currentDate, setCurrentDate }) => {
     const [days, setDays] = useState([]);
 
     useEffect(() => {
@@ -83,13 +83,15 @@ const Calendar = ({ colors = [], onPrevMonth, onNextMonth }) => {
     };
 
     const handlePrevMonth = () => {
-        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-        onPrevMonth();
+        const prevDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+        setCurrentDate(prevDate);
+        onPrevMonth(prevDate.getMonth(), prevDate.getFullYear());
     };
 
     const handleNextMonth = () => {
-        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-        onNextMonth();
+        const nextDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+        setCurrentDate(nextDate);
+        onNextMonth(nextDate.getMonth(), nextDate.getFullYear());
     };
 
     const monthNames = [
@@ -200,22 +202,71 @@ const CircularProgressBar = ({ progress, statics }) => {
     );
 };
 
+const getUserColors = async (numDays, uid, Month) => {
+    const response = await fetch(`http://172.10.5.46:80/read/${uid}`, {
+        method: 'GET'
+    });
+    
+    const data = await response.json();
+
+    const res = data.diaries.map(entry => ({
+        created_at: entry.created_at,
+        color: entry.color,
+        emotion: entry.emotion
+    }));
+    console.log(res);
+
+    let colors = [];
+    let color_r = [0, 128, 255, 0, 128, 255, 0, 255];
+    let color_g = [0, 0, 0, 0, 128, 255, 255, 165];
+    let color_b = [0, 128, 0, 255, 128, 0, 0, 0];
+
+    for(let i = 0 ; i < numDays; i++){
+        colors.push([255, 255, 255]);
+    }
+
+    const monthString = `${2024}-${String(Month + 1).padStart(2, '0')}`;
+    for (let i = 0; i < res.length; i++) {
+        if (res[i]['created_at'].startsWith(monthString)) {
+            const day = parseInt(res[i]['created_at'].substr(8, 2), 10) - 1;
+            colors[day] = res[i]['color'];
+        }
+    }
+    return colors;
+}
+
 const MainPage = () => {
     const handleLogoClick = () => {
         window.location.reload();
     };
 
-    const [progress, setProgress] = useState(0);
-    const [colors, setColors] = useState(generateRandomColors(31));
-    const [statics, setStatics] = useState(get_statics_color(colors));
-    
+    const location = useLocation();
+    const userId = location.state?.userId;
 
-    const updateColorsAndStatics = () => {
-        const newColors = generateRandomColors(31);
+    const [progress, setProgress] = useState(0);
+    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+    const [currentMonthDays, setCurrentMonthDays] = useState(new Date(currentYear, currentMonth + 1, 0).getDate());
+    const [colors, setColors] = useState([]);
+    const [statics, setStatics] = useState([]);
+    const [currentDate, setCurrentDate] = useState(new Date(currentYear, currentMonth, 1));
+
+    useEffect(() => {
+        const fetchInitialColors = async () => {
+            const initialColors = await getUserColors(currentMonthDays, userId, currentMonth);
+            setColors(initialColors);
+            setStatics(get_statics_color(initialColors));
+        };
+        fetchInitialColors();
+    }, [currentMonthDays, userId]);
+
+    const updateColorsAndStatics = (month, year, numDays) => {
+        const newColors = generateRandomColors(numDays);
         setColors(newColors);
         setStatics(get_statics_color(newColors));
+        setCurrentMonth(month);
+        setCurrentYear(year);
         setProgress(0);
-        console.log(statics);
         const interval = setInterval(() => {
             setProgress(prevProgress => {
                 if (prevProgress >= 100) {
@@ -254,7 +305,23 @@ const MainPage = () => {
             </div>
             <div className="ShowCal">
                 <div className="Calendar">
-                    <Calendar colors={colors} onPrevMonth={updateColorsAndStatics} onNextMonth={updateColorsAndStatics} />
+                    <Calendar 
+                        colors={colors} 
+                        onPrevMonth={(month, year) => {
+                            const prevDate = new Date(currentYear, currentMonth - 1, 1);
+                            const daysInMonth = new Date(prevDate.getFullYear(), prevDate.getMonth() + 1, 0).getDate();
+                            setCurrentMonthDays(daysInMonth);
+                            updateColorsAndStatics(prevDate.getMonth(), prevDate.getFullYear(), daysInMonth);
+                        }} 
+                        onNextMonth={(month, year) => {
+                            const nextDate = new Date(currentYear, currentMonth + 1, 1);
+                            const daysInMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
+                            setCurrentMonthDays(daysInMonth);
+                            updateColorsAndStatics(nextDate.getMonth(), nextDate.getFullYear(), daysInMonth);
+                        }} 
+                        currentDate={currentDate}
+                        setCurrentDate={setCurrentDate}
+                    />
                 </div>
                 <div className="Circle">
                     <CircularProgressBar progress={progress} statics={statics} />

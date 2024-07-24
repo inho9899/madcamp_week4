@@ -84,14 +84,6 @@ html, body {
     color: #ffffff;
   }
   
-  .day.weekend {
-    color: #d10000;
-  }
-  
-  .day.saturday {
-    color: blue;
-  }
-  
   .day.other-month {
     background-color: #f0f0f0;
   }

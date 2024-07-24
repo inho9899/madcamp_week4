@@ -27,7 +27,7 @@ const LoginScreen = () => {
 
     if (data.status === 'success') {
       alert('Login successful!');
-      navigate('/main');
+      navigate('/main', { state: { userId: data.user_id } });
     } else {
       alert('Login failed!');
     }
