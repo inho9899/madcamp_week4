@@ -129,6 +129,7 @@ html, body {
   width: 40vh;
   height: 40vh;
   background-color: #f0f0f0;
+  color : #000;
   border: none;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -141,6 +142,7 @@ html, body {
   height: 5vh;
   margin-top : 3vh;
   background-color: #f0f0f0;
+  color : #000;
   border: none;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

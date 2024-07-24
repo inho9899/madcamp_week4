@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import './App.css';
+import Write from './Write';
+import Show from './Show';
+import Chat from './Chat';
 import Main from './MainPage';
 
 const LoginScreen = () => {
@@ -134,7 +137,10 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/main" element={<Main />} />
-        <Route path="/" element={<LoginScreen />} />
+        <Route path="/" element={<LoginScreen />} />        
+        <Route path="/Write" element={<Write />} />
+        <Route path="/Show" element={<Show />} />
+        <Route path="/Chat" element={<Chat />} />
       </Routes>
     </Router>
   );

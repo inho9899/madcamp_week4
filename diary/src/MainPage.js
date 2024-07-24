@@ -247,7 +247,7 @@ const MainPage = () => {
     const [showButtons, setShowButtons] = useState(false);
 
     const handleShowClick = () => {
-        navigate('/show', { state: { userId } });
+        navigate('/Show', { state: { userId } });
     };
 
     const handleAddClick = () => {
@@ -259,11 +259,16 @@ const MainPage = () => {
     };
 
     const handleButton1Click = () => {
-        navigate('/write', { state: { userId } });
+        navigate('/Write', { state: { userId } });
     };
 
-    const handleButton2Click = () => {
-        navigate('/chat', { state: { userId } });
+    const handleButton2Click = async () => {
+        const response = await fetch(`http://172.10.5.46:80/start_conversation`, {
+                method: 'GET'
+        });
+        const data = await response.json();
+
+        navigate('/Chat', { state: {userId : userId, threadId : data['thread_id']} });
     };
 
     const [progress, setProgress] = useState(0);
