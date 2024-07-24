@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask OpenAI Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .message p {
+            margin: 5px 0;
+        }
+        .user-message {
+            text-align: right;
+        }
+        .bot-message {
+            text-align: left;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #mixed_color {
+            width: 100px;
+            height: 100px;
+            margin-top: 10px;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2>OpenAI Chatbot</h2>
+        <div id="chatbox">
+            <!-- Messages will be displayed here -->
+        </div>
+        <textarea id="message" rows="3" placeholder="Type your message here..."></textarea>
+        <button onclick="startConversation()">Start Conversation</button>
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="endConversation()">End Conversation</button>
+    </div>
+    <div id="mixed_color"></div>
+    <h3>Summary:</h3>
+    <div id="summary"></div>
+    <script>
+        let threadId;
+
+        async function startConversation() {
+            const response = await fetch('/start_conversation', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            const data = await response.json();
+            threadId = data.thread_id;
+            document.getElementById('chatbox').innerHTML += `<p><strong>System:</strong> Conversation started with thread ID ${threadId}</p>`;
+        }
+
+        async function sendMessage() {
+            const message = document.getElementById('message').value;
+            if (!message || !threadId) return;
+
+            // Display user's message
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user-message';
+            userMessageDiv.innerHTML = `<p><strong>You:</strong> ${message}</p>`;
+            document.getElementById('chatbox').appendChild(userMessageDiv);
+
+            // Clear the input field
+            document.getElementById('message').value = '';
+
+            // Send the message to the server
+            const response = await fetch('/chat_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message, thread_id: threadId, username: "Jiyoon"}),
+            });
+
+            const data = await response.json();
+
+            // Display bot's message
+            const botMessageDiv = document.createElement('div');
+            botMessageDiv.className = 'message bot-message';
+            botMessageDiv.innerHTML = `<p><strong>Bot:</strong> ${data.message}</p>`;
+            document.getElementById('chatbox').appendChild(botMessageDiv);
+        }
+
+        async function endConversation() {
+            if (!threadId) return;
+
+            // End the conversation and analyze emotions
+            const response = await fetch('/end_conversation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ thread_id: threadId }),
+            });
+
+            const data = await response.json();
+
+            // Display emotion analysis
+            document.getElementById('chatbox').innerHTML += `<p><strong>Emotion Analysis:</strong> ${JSON.stringify(data)}</p>`;
+
+            // 혼합된 색상 표시
+            const colorBox = document.getElementById('mixed_color');
+            const [r, g, b] = data.mixed_color;
+            const alpha = 0.5;
+            colorBox.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+
+            // 요약 문장 표시
+            const summaryTextDiv = document.getElementById('summary');
+            summaryTextDiv.innerText = data.summary;
+        }
+    </script>
+</body>
+</html>
