@@ -3,42 +3,42 @@ import './MainPage.css';
 import headerImage from './logo.png'; // 이미지 파일 가져오기
 import { useLocation } from 'react-router-dom';
 
-const generateRandomColors = (numDays) => {
-    let colors = [];
-    let color_r = [0, 128, 255, 0, 128, 255, 0, 255];
-    let color_g = [0, 0, 0, 0, 128, 255, 255, 165];
-    let color_b = [0, 128, 0, 255, 128, 0, 0, 0];
+function get_max_index(dict){
+    let emotion = { 공포: 0, 놀람: 1, 분노: 2, 슬픔: 3, 중립: 4, 행복: 5, 혐오: 6, 불안: 7};
+    let tmp = Object.keys(dict).reduce((a, b) => dict[a] > dict[b] ? a : b);
 
-    for (let i = 0; i < numDays; i++) {
-        const rnd = Math.floor(Math.random() * 8);
-        const r = color_r[rnd];
-        const g = color_g[rnd];
-        const b = color_b[rnd];
-        colors.push([r, g, b]);
-    }
-    return colors;
-};
+    return emotion[tmp];
+}
 
-const get_statics_color = (colors) => {
-    const color_to_index = [
-        [0, 0, 0], [128, 0, 128], [255, 0, 0], [0, 0, 255], 
-        [128, 128, 128], [255, 255, 0], [0, 255, 0], [255, 165, 0]
-    ];
+const get_statics_color = async (Monthdays, uid, Month) => {
+    const response = await fetch(`http://172.10.5.46:80/read/${uid}`, {
+        method: 'GET'
+    });
+    
+    const data = await response.json();
+    console.log(data);
 
-    let res = Array(color_to_index.length).fill(0);
+    const resp = data.diaries.map(entry => ({
+        created_at: entry.created_at,
+        emotion: entry.emotion
+    }));
 
-    const colorToString = color => color.join(',');
+    console.log(resp);
 
-    const color_to_index_strings = color_to_index.map(colorToString);
+    let res = Array(9).fill(0); // 예시 배열
 
-    for (let i = 0; i < colors.length; i++) {
-        const colorString = colorToString(colors[i]);
-        const index = color_to_index_strings.indexOf(colorString);
-        if (index !== -1) {
-            res[index] += 1;
+    const monthString = `${2024}-${String(Month + 1).padStart(2, '0')}`;
+    
+    let cnt = 0;
+    for(let i = 0  ; i < resp.length ; i ++){
+        if (resp[i]['created_at'].startsWith(monthString)){
+            res[get_max_index(resp[i]["emotion"])] += 1;
+            cnt += 1;
         }
     }
 
+    res[8] = Monthdays - cnt;
+    console.log(res);
     return res;
 };
 
@@ -129,6 +129,7 @@ const CircularProgressBar = ({ progress, statics }) => {
     const circumference = normalizedRadius * 2 * Math.PI;
     const len = statics.length;
 
+    // console.log('statics', statics);
     const sum = statics.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
     let ratio = new Array(len);
@@ -148,7 +149,8 @@ const CircularProgressBar = ({ progress, statics }) => {
 
     let psy = new Array(len);
     let xi = new Array(len);
-    let colors = ["black", "purple", "red", "blue", "gray", "yellow", "green", "orange"];
+    let colors = ["rgba(0, 0, 0, 0.8)", "rgba(128, 0, 128, 0.8)", "rgba(255, 0, 0, 0.8)", "rgba(0, 0, 255, 0.8)",
+         "rgba(128, 128, 128, 0.8)", "rgba(255, 255, 0, 0.8)", "rgba(0, 255, 0, 0.8)", "rgba(255, 165, 0, 0.8)", "rgba(255, 255, 255, 0.8)"];
 
     for (let i = 0; i < len; i++) {
         psy[i] = arc_circumference[i] / (Math.PI * 2 * normalizedRadius);
@@ -203,6 +205,7 @@ const CircularProgressBar = ({ progress, statics }) => {
 };
 
 const getUserColors = async (numDays, uid, Month) => {
+    console.log('getUserColors : ', uid, Month, numDays);
     const response = await fetch(`http://172.10.5.46:80/read/${uid}`, {
         method: 'GET'
     });
@@ -214,12 +217,9 @@ const getUserColors = async (numDays, uid, Month) => {
         color: entry.color,
         emotion: entry.emotion
     }));
-    console.log(res);
+    // console.log(res);
 
     let colors = [];
-    let color_r = [0, 128, 255, 0, 128, 255, 0, 255];
-    let color_g = [0, 0, 0, 0, 128, 255, 255, 165];
-    let color_b = [0, 128, 0, 255, 128, 0, 0, 0];
 
     for(let i = 0 ; i < numDays; i++){
         colors.push([255, 255, 255]);
@@ -246,7 +246,7 @@ const MainPage = () => {
     const [progress, setProgress] = useState(0);
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-    const [currentMonthDays, setCurrentMonthDays] = useState(new Date(currentYear, currentMonth + 1, 0).getDate());
+    const [currentMonthDays, setCurrentMonthDays] = useState(new Date(currentYear, currentMonth, 0).getDate());
     const [colors, setColors] = useState([]);
     const [statics, setStatics] = useState([]);
     const [currentDate, setCurrentDate] = useState(new Date(currentYear, currentMonth, 1));
@@ -255,15 +255,18 @@ const MainPage = () => {
         const fetchInitialColors = async () => {
             const initialColors = await getUserColors(currentMonthDays, userId, currentMonth);
             setColors(initialColors);
-            setStatics(get_statics_color(initialColors));
+            const staticsData = await get_statics_color(currentMonthDays, userId, currentMonth);
+            setStatics(staticsData);
         };
         fetchInitialColors();
     }, [currentMonthDays, userId]);
 
-    const updateColorsAndStatics = (month, year, numDays) => {
-        const newColors = generateRandomColors(numDays);
+    const updateColorsAndStatics = async (month, year, numDays) => {
+        console.log(year, month, numDays, userId);
+        const newColors = await getUserColors(numDays, userId, month);
         setColors(newColors);
-        setStatics(get_statics_color(newColors));
+        const staticsData = await get_statics_color(numDays, userId, month);
+        setStatics(staticsData);
         setCurrentMonth(month);
         setCurrentYear(year);
         setProgress(0);
@@ -311,12 +314,16 @@ const MainPage = () => {
                             const prevDate = new Date(currentYear, currentMonth - 1, 1);
                             const daysInMonth = new Date(prevDate.getFullYear(), prevDate.getMonth() + 1, 0).getDate();
                             setCurrentMonthDays(daysInMonth);
+                            setCurrentMonth(prevDate.getMonth());
+                            setCurrentYear(prevDate.getFullYear());
                             updateColorsAndStatics(prevDate.getMonth(), prevDate.getFullYear(), daysInMonth);
                         }} 
                         onNextMonth={(month, year) => {
                             const nextDate = new Date(currentYear, currentMonth + 1, 1);
                             const daysInMonth = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, 0).getDate();
                             setCurrentMonthDays(daysInMonth);
+                            setCurrentMonth(nextDate.getMonth());
+                            setCurrentYear(nextDate.getFullYear());
                             updateColorsAndStatics(nextDate.getMonth(), nextDate.getFullYear(), daysInMonth);
                         }} 
                         currentDate={currentDate}
