@@ -242,6 +242,7 @@ const MainPage = () => {
 
     const location = useLocation();
     const userId = location.state?.userId;
+    const username = location.state?.username;
     const navigate = useNavigate();
 
     const [showButtons, setShowButtons] = useState(false);
@@ -268,7 +269,7 @@ const MainPage = () => {
         });
         const data = await response.json();
 
-        navigate('/Chat', { state: {userId : userId, threadId : data['thread_id']} });
+        navigate('/Chat', { state: {userId : userId, username: username, threadId : data['thread_id']} });
     };
 
     const [progress, setProgress] = useState(0);
