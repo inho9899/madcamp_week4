@@ -172,7 +172,7 @@ const CircularProgressBar = ({ progress, statics }) => {
     const circles = new Array(len);
     count = 0;
     for (let i = 0; i < len; i++) {
-        circles[i] = { stroke: `${colors[i]}`, transform: `rotate(${count} ${radius} ${radius})`, progressOffset: progressOffset[i], arcCircumference: arc_circumference[i] };
+        circles[i] = { stroke: `${colors[i]}`, transform: `rotate(${count} ${radius} ${radius})`, progressOffset: progressOffset[i], arcCircumference: arc_circumference[i], text: `Emotion: ${i}, Value: ${statics[i]}` };
         count += arc[i];
     }
 
@@ -199,7 +199,9 @@ const CircularProgressBar = ({ progress, statics }) => {
                         cx={radius}
                         cy={radius}
                         transform={circle.transform}
-                    />
+                    >
+                        <title>{circle.text}</title>
+                    </circle>
                 ))}
             </>
         </svg>

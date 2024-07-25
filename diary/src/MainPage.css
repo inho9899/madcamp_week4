@@ -36,15 +36,12 @@ html, body {
   border-right: 1px solid black;
 }
 
-
-
 .Circle {
   display: flex;
   width: 40vw;
   justify-content: center; /* 수평 가운데 정렬 */
   align-items: center; /* 수직 가운데 정렬 */
 }
-
 
 .Calendar {
   display: flex;
@@ -114,7 +111,7 @@ html, body {
   z-index: 10;
 }
 
-.overlay-container h1{
+.overlay-container h1 {
   font-family : 'Varta';
   margin-top : 4vh;
 }
