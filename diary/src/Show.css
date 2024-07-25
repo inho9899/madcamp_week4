@@ -1,0 +1,52 @@
+.MainPage {
+    text-align: center;
+}
+
+.Main-header {
+    background-color: #282c34;
+    padding: 20px;
+    color: white;
+}
+
+.header-image {
+    height: 40vmin;
+    cursor: pointer;
+}
+
+.Main-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 20px;
+    height: calc(100vh - 60px); /* Adjust the height to account for header */
+}
+
+.grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-right: 20px; /* Add padding to the right to create gap with scrollbar */
+    padding-bottom: 40px; /* Add padding to the bottom to create more space */
+    height: calc(100vh - 120px); /* Adjust the height to ensure it's within the view */
+}
+
+.grid-item {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 1 1 calc(33.333% - 20px); /* 3 items per row */
+    box-sizing: border-box;
+}
+
+.grid-item h3 {
+    margin: 0 0 10px;
+}
+
+.grid-item p {
+    margin: 0;
+}
