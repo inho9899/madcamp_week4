@@ -8,6 +8,7 @@ const Chat = () => {
 
     const location = useLocation();
     const userId = location.state?.userId;
+    const username = location.state?.username;
     const tId = location.state?.threadId;
     
     
@@ -55,7 +56,7 @@ const Chat = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message: input, thread_id: threadId, username: 'Jiyoon' }),
+      body: JSON.stringify({ message: input, thread_id: threadId, username: username }),
     });
 
     const data = await response.json();
@@ -131,7 +132,7 @@ const Chat = () => {
                   </div>
                 ))}
               </div>
-              <button onClick={() => setShowPopup(false)}>Close</button>
+              <button onClick={() => navigate(-1)}>Close</button>
             </div>
           </div>
         )}
