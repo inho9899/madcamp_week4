@@ -10,71 +10,40 @@ html, body {
   .inner_header {
     display: flex;
     align-items: center;
-    justify-content: center;
+    /* justify-content: center; */
     height: 10vh;
   }
   
   .header-image {
-    max-height: 100%;
+    max-height: 60%;
   }
-  
-  .kakao-editor-container {
-    display: flex;
-    justify-content: center; /* 가로 가운데 정렬 */
-    align-items: center; /* 세로 가운데 정렬 */
-    height: 80vh; /* 전체 화면 높이 */
-  }
-  
-  .kakao-editor {
-    display: flex;
-    flex-direction: column;
-    background-color: #fafafa;
-    padding: 20px;
-    height: 70vh; /* Adjust based on header and footer height */
-    width: 80vw;
-  }
-  
-  .post-title {
-    padding: 10px;
-    font-size: 24px;
-    border-bottom: 1px solid #ccc;
-  }
-  
+      
   .markdown-input {
-    width: 100%;
-    height: 30%; /* 에디터 부분의 높이를 조정 */
-    padding: 10px;
+    margin-top: 5vh;
+    margin-left: 5vh;
+    width: 60vw;
+    height : 50vh;
+    padding: 20px;
     font-size: 16px;
     border: 1px solid #ccc;
-    margin-bottom: 20px;
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
   }
-  
-  .markdown-preview {
-    flex: 1;
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow-y: auto;
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-  }
-  
+    
   #footer {
     display: flex;
     justify-content: flex-end;
     height: 5vh;
-    margin-top: 5vh;
     background-color: #fafafa;
   }
   
   #footer button {
-    margin-left: 10px;
-    padding: 10px 20px;
+    margin-right: 18vw;
+    width: 20vw;
+    height: 5vh;
     background-color: #000;
     color: #fff;
     border: none;
     cursor: pointer;
   }
+  
   
