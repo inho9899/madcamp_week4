@@ -9,7 +9,6 @@ const get_diary = async (uid) => {
     });
 
     const data = await response.json();
-
     const resp = data.diaries.map(entry => ({
         created_at: entry.created_at,
         type: entry.type,
@@ -45,6 +44,7 @@ const Show = () => {
     const navigate = useNavigate();
     const [diaryData, setDiaryData] = useState([]);
     const [modalContent, setModalContent] = useState(null);
+
 
     const handleLogoClick = () => {
         navigate('/main', { state: { userId } });
@@ -112,7 +112,6 @@ const Show = () => {
                     ))}
                 </div>
             </div>
-
             {modalContent && (
                 <div className="modal" style={{ display: 'block'}}>
                     <div className="cover">
