@@ -2,15 +2,17 @@
 
 ---
 
-
-
-![스크린샷 2024-07-25 오후 5.26.52.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/b846e1da-9fc6-469a-bf2b-efb39ac5292e/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-07-25_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5.26.52.png)
+<img src="https://github.com/user-attachments/assets/73d8a5bd-52df-431d-b153-8727fda43f94" width="30%">
 
 > 똑똑한 일기장 Today’s Mood입니다!
 > 
 - 작성한 일기를 바탕으로 자신의 감정상태를 확인하세요!
 - 월별로 제공되는 감정 통계를 확인해보세요!
 - 챗봇과 대화하며 일기를 써보세요!
+
+<br>
+<br>
+
 
 ### Team
 
@@ -22,6 +24,9 @@
 |   [@inho9899](https://github.com/inho9899)   |    [@enchantee00](https://github.com/enchantee00)  |
 | 카이스트 전산학부 4학년 | 부산대학교 정보컴퓨터공학부 3학년 |
 
+
+<br>
+<br>
 
 
 ### Tech Stack
@@ -41,6 +46,10 @@
 
 **IDE :** VSCode
 
+<br>
+<br>
+
+
 ### Introduction
 
 ---
@@ -54,13 +63,23 @@
 
 이 모델은 인간의 감정을 8가지로 나누고, 이 감정들이 결합하여 더 복잡한 감정을 형성하는 방식을 설명하는데요, 이 8가지 감정을 분류해주는 감정분석 모델을 만들고 서비스에 적용시켰습니다.
 
-![Dl3c8ZJUcAA3OGD.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/8d43eba2-85cb-4ea0-b58a-1ddc060c27fe/Dl3c8ZJUcAA3OGD.png)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/37210d20-5d4c-4105-9824-2edd176c0b47" width="40%">
+</p>
+
+
+
+<br>
+<br>
+
 
 ### Details
 
 ---
 
 <aside>
+  
 🤖 **AI**
 
 </aside>
@@ -95,6 +114,8 @@ Google BART 기반 범용 NLP 모델
 KoBART는 사전학습 모델로도 성능이 준수해 그대로 사용하였습니다.
 ```
 
+<br>
+
 > **Dataset**
 > 
 
@@ -118,6 +139,9 @@ KoBART는 사전학습 모델로도 성능이 준수해 그대로 사용하였�
 
 로버트 플루치크가 정의한 ‘신뢰’에 대한 감정 라벨 데이터가 없어 두 가지 데이터를 합쳐 기쁨, 슬픔, 불안, 공포, 놀람, 혐오, 중립 8가지 감정으로 학습시켰습니다.
 
+<br>
+
+
 > **Performance**
 > 
 
@@ -135,7 +159,8 @@ log_interval = 200
 learning_rate =  5e-5
 ```
 
-![스크린샷 2024-07-25 오후 5.09.48.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/acbc9763-e591-48bc-a0d4-c3bc15cd7a94/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-07-25_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5.09.48.png)
+<img width="610" alt="%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-07-25_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5 09 48" src="https://github.com/user-attachments/assets/72ba2aee-0b4e-4105-9966-f9dee245fcce">
+
 
 8가지 감정 라벨에 대해 파인튜닝한 KoBERT의 분류 성능입니다.
 
@@ -154,7 +179,12 @@ Softmax layer를 거친 output이 나오기 때문에, 감정에 대한 확률�
 
 색깔 선정 기준은 영화 인사이드 아웃을 참고했습니다 😊
 
+<br>
+<br>
+
+
 <aside>
+  
 🌐 **Front**
 
 </aside>
@@ -164,16 +194,22 @@ Softmax layer를 거친 output이 나오기 때문에, 감정에 대한 확률�
 
 ---
 
-![스크린샷 2024-07-25 오후 5.17.35.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/1b196ce1-5c0a-476a-876b-e4b1526ac784/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-07-25_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5.17.35.png)
+<img width="1552" alt="%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-07-25_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5 17 35" src="https://github.com/user-attachments/assets/d6a428b2-f5a3-49eb-afac-4828d1313a1f">
+
 
 로그인 화면입니다. 
+
+<br>
+
 
 > **Main Page**
 > 
 
 ---
 
-![스크린샷 2024-07-25 오후 5.20.28.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/a9bb9a9c-e3a9-425f-a95c-ad0c2a907cee/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-07-25_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5.20.28.png)
+<img width="1552" alt="%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-07-25_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5 20 28" src="https://github.com/user-attachments/assets/45f63004-0be1-4566-97b5-747119fccabc">
+
+
 
 로그인 후 바로 메인 페이지로 이동됩니다.
 각 날짜에 해당하는 일기를 바탕으로 혼합된 색상으로 표현됩니다.
@@ -190,14 +226,21 @@ let \text{ } f_{i} = \frac{\pi}{50}(progress - \sum_{k=1}^{i}{100\psi_k})
 Then, \text{ } (transparency)_i = min(max(0, f_i), 2 \pi R \psi_i)
 $$
 
-![circularbar-ezgif.com-video-to-gif-converter.gif](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/4a0a13e2-5e52-40b2-8fbc-b94478a79362/circularbar-ezgif.com-video-to-gif-converter.gif)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1cef286a-cfda-447b-8e8a-5575ae3f3570" width="30%">
+</p>
+
+<br>
+
 
 > **Read Diary**
 > 
 
 ---
 
-![KakaoTalk_Photo_2024-07-25-20-13-34.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/45c9009c-8108-4b1e-8dc0-46dc8ed67623/KakaoTalk_Photo_2024-07-25-20-13-34.png)
+![KakaoTalk_Photo_2024-07-25-20-13-34](https://github.com/user-attachments/assets/e44173ae-34fa-45f8-a3cd-38181380c321)
+
 
 작성한 일기를 볼 수 있는 페이지입니다. 
 
@@ -205,60 +248,84 @@ $$
 
 또한 일기를 챗봇으로 쓴 경우, 문장 요약 모델(KoBART)을 사용하여 요약한 일기를 preview에 보여줍니다.
 
-![KakaoTalk_Photo_2024-07-25-20-13-54.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/92a01270-c822-4744-a9a5-3a9f1ade303a/KakaoTalk_Photo_2024-07-25-20-13-54.png)
+![KakaoTalk_Photo_2024-07-25-20-13-54](https://github.com/user-attachments/assets/a4ea192c-a19d-4d0a-a788-af114c0c8495)
+
+
 
 해당 일기를 클릭하면 본인이 쓴 일기 내역을 확인할 수 있고, 이를 삭제하거나 수정할 수 있게 했습니다.
+
+<br>
 
 > **Write Diary**
 > 
 
 ---
 
-![KakaoTalk_Photo_2024-07-25-20-13-40.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/a0924698-c264-4efa-94fb-5a09b7fe2d16/KakaoTalk_Photo_2024-07-25-20-13-40.png)
+![KakaoTalk_Photo_2024-07-25-20-13-40](https://github.com/user-attachments/assets/6029757d-98c5-4cf2-a119-3adf442860ea)
 
-![KakaoTalk_Photo_2024-07-25-20-13-44.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/b1758e11-773a-4f0d-95b2-87cee5f9f736/KakaoTalk_Photo_2024-07-25-20-13-44.png)
+
+![KakaoTalk_Photo_2024-07-25-20-13-44](https://github.com/user-attachments/assets/de334a6c-a5f2-41e0-892a-e73d5644f5aa)
 
 메인 화면에서 “Add” 버튼을 클릭하면 일반적인 일기를 작성할 수 있는 페이지로 넘어갑니다.
 
 완료 버튼을 누르면 일기에 대한 감정분석을 하고 이를 색깔로 표현해 DB에 저장하게 됩니다.
+
+<br>
 
 > **Chat with Diary**
 > 
 
 ---
 
-![KakaoTalk_Photo_2024-07-25-20-13-47.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/5037640e-94dc-4552-9ba9-09f8d638da82/KakaoTalk_Photo_2024-07-25-20-13-47.png)
+![KakaoTalk_Photo_2024-07-25-20-13-47](https://github.com/user-attachments/assets/26c6a93d-5d84-4ca2-aacc-0a049584b64a)
+
+
 
 또한 커스텀 챗봇과 대화를 나누며 일기를 작성할 수도 있습니다.
 
 챗봇은 작성자의 감정에 집중하며 어떤 상황인 물어보도록 설정 돼 있으며, 사용자는 Chat GPT API를 사용하여 대화를 나눌 수 있습니다.
 
-![KakaoTalk_Photo_2024-07-25-20-13-51.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/71c99c17-8ee6-4a2b-9e97-0aeb9dbc930e/KakaoTalk_Photo_2024-07-25-20-13-51.png)
+![KakaoTalk_Photo_2024-07-25-20-13-51](https://github.com/user-attachments/assets/813ebf24-60e5-4190-a1cc-ac34f54f92c0)
+
+
 
 대화가 종료되면 챗봇과 대화를 나눈 내역 중 사용자가 답한 문장만 모아서 어떤 감정의 분포도를 보여줍니다.
 
 해당 정보와 색채 정보는 DB에 저장돼 일기 목록에 반영됩니다.
 
+<br>
+<br>
+
+
 <aside>
+  
 💽 **Server**
 
 </aside>
+
+<br>
 
 > **Database Diagram**
 > 
 
 ---
 
-![Untitled-7.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/d8a23d20-4205-48c5-87e3-2571483fe9f4/Untitled-7.png)
+![Untitled-7](https://github.com/user-attachments/assets/55d7a419-1fc5-45dd-a8e8-f85d8eda148b)
+
 
 DB는 총 2개의 테이블로 이루어져 있습니다. 유저 정보를 관리하기 위한 “user” 테이블, 일기 정보를 관리하기 위한 “diary” 테이블입니다.
+
+<br>
+
+<br>
 
 > **API**
 > 
 
 ---
 
-![스크린샷 2024-07-25 오후 5.32.48.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/09659cba-6a41-4f82-ad7e-1d6ba1ebb10b/bf053971-aa35-41cc-b721-c3a00c317949/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-07-25_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5.32.48.png)
+<img width="296" alt="%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-07-25_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_5 32 48" src="https://github.com/user-attachments/assets/703ba8f7-6b0d-4c55-961a-4d346a0caf5c">
+
 
 서비스에 사용한 API입니다.
 
